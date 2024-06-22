@@ -1,0 +1,68 @@
+# Debian base image
+FROM debian:12
+
+# Avoid warnings by switching to noninteractive for the build process
+ENV DEBIAN_FRONTEND=noninteractive
+
+ENV USER=root
+
+# Install MATE, VNC server, dbus-x11, xfonts-base, and other necessary packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    mate-desktop-environment-core \
+    tightvncserver \
+    dbus-x11 \
+    xfonts-base \
+    software-properties-common \
+    apt-transport-https \
+    dirmngr \
+    ca-certificates \
+    curl \
+    locales \
+    figlet\
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Setup locales
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen en_US.UTF-8 && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
+
+# Add AnyDesk GPG key and repository
+RUN curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY | gpg --dearmor | tee /usr/share/keyrings/anydesk.gpg > /dev/null && \
+    echo 'deb [signed-by=/usr/share/keyrings/anydesk.gpg] http://deb.anydesk.com/ all main' > /etc/apt/sources.list.d/anydesk.list
+
+# Install AnyDesk
+RUN apt-get update && apt-get install -y anydesk && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Setup VNC server
+RUN mkdir /root/.vnc \
+    && echo "123" | vncpasswd -f > /root/.vnc/passwd \
+    && chmod 600 /root/.vnc/passwd
+
+# Create an .Xauthority file
+RUN touch /root/.Xauthority
+
+# Set display resolution (change as needed)
+ENV RESOLUTION=1920x1080
+
+# Expose VNC port
+EXPOSE 5902
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy a script to start the VNC server
+COPY start-vnc.sh start-vnc.sh
+RUN chmod +x start-vnc.sh
+
+# List the contents of the /app directory
+RUN ls -a /app
+
+# Configure the hostname and shell prompt
+RUN echo 'export PS1="\\u@\\h: \\[\\033[01;34m\\]\\w\\[\\033[00m\\]$ "' >> /root/.bashrc && \
+    echo 'figlet mgodoyd' >> /root/.bashrc
+
+# Start the VNC server by default
+CMD ["./start-vnc.sh"]
+
