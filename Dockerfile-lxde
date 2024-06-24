@@ -1,40 +1,30 @@
-# Debian base image
-FROM debian:12
+# Fedora base image
+FROM fedora:latest
 
 # Avoid warnings by switching to noninteractive for the build process
 ENV DEBIAN_FRONTEND=noninteractive
 
 ENV USER=root
 
-# Install XFCE, VNC server, dbus-x11, xfonts-base, and other necessary packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    xfce4 \
-    xfce4-goodies \
-    tightvncserver \
+# Install LXDE, VNC server, dbus-x11, xfonts-base, and other necessary packages
+RUN dnf update -y && dnf install -y \
+    @lxde-desktop \
+    tigervnc-server \
     dbus-x11 \
-    xfonts-base \
-    software-properties-common \
-    apt-transport-https \
-    dirmngr \
-    ca-certificates \
+    xorg-x11-fonts-Type1 \
+    xorg-x11-fonts-misc \
+    dnf-plugins-core \
     curl \
+    glibc-locale-sourc \
+    glibc-langpack-en \
+    wget \
     figlet \
-    locales \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && dnf clean all
 
-# Setup locales
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen en_US.UTF-8 && \
-    dpkg-reconfigure --frontend=noninteractive locales && \
-    update-locale LANG=en_US.UTF-8
-
-# Add AnyDesk GPG key and repository
-RUN curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY | gpg --dearmor | tee /usr/share/keyrings/anydesk.gpg > /dev/null && \
-    echo 'deb [signed-by=/usr/share/keyrings/anydesk.gpg] http://deb.anydesk.com/ all main' > /etc/apt/sources.list.d/anydesk.list
-
-# Install AnyDesk
-RUN apt-get update && apt-get install -y anydesk && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Add AnyDesk
+RUN wget https://download.anydesk.com/linux/anydesk-6.3.2-1.el8.x86_64.rpm \
+    && dnf install -y ./anydesk-6.3.2-1.el8.x86_64.rpm \
+    && rm -f anydesk_6.3.2-1_x86_64.rpm
 
 # Setup VNC server
 RUN mkdir /root/.vnc \
@@ -48,7 +38,7 @@ RUN touch /root/.Xauthority
 ENV RESOLUTION=1920x1080
 
 # Expose VNC port
-EXPOSE 5901
+EXPOSE 5903
 
 # Set the working directory in the container
 WORKDIR /app
