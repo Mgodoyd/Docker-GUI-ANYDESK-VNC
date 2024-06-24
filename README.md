@@ -41,63 +41,85 @@ These Docker images also allow connection to a Docker terminal using a graphical
 
 ### Construction of Images
 
-1. **Dockerfile**
+1. **Create a directory for the project**
+
     ```sh
-    docker build -t vnc-anydesk-debian -f Dockerfile-debian .
+    mkdir vnc_distribution_GUI
+    cd  vnc_distribution_GUI
+    ```
+2.  **Create and edit the file `start-vnc.sh`**
+
+    ```sh
+    nano vnc_distribution_GUI/start-vnc.sh
     ```
 
-### Ejecución de los Contenedores
+    **Copy and paste the script content**
 
-1. **Debian**
     ```sh
-    docker build -t vnc_xxx_xxx .
+    #!/bin/bash 
+
+    echo  'Actualizando el archivo /etc/hosts...'
+     HOSTNAME=$(hostname) 
+    echo  "127.0.1.1\t $HOSTNAME " >> /etc/hosts 
+    
+    echo  "Iniciando el servidor VNC en $RESOLUTION .. ."
+     vncserver - matar :1 || true
+     vncserver -geometry $RESOLUTION & 
+    
+    echo  "El servidor VNC se inició en $RESOLUTION ! ^-^" 
+    
+    echo  "Iniciando tail -f /dev/null..." 
+    tail -f /dev/null
     ```
 
-2. **Fedora**
+3. **Construction**
+   * build the image from the directory created above:
     ```sh
-    docker run -d -p 5902:5901 -p 7071:7070 --name vnc-anydesk-fedora vnc-anydesk-fedora
+    docker build -t vnc_distribution_GUI .
     ```
 
-### Acceso al Entorno de Escritorio
+### Container Execution
+
+1. **Distribution**
+    ```sh
+    docker run -itd --rm --name vnc_fedora --hostname fedora -p 5901:5901 vnc_fedora_lxde
+    ```
+
+### Access to images
+
+1. **Distribution**
+    ```sh
+    docker exec -it vnc_fedora /bin/bash
+    ```
+2. **Script Execution**
+    ```sh
+    ./start-vnc-sh &
+    ```
+### Access to the Desktop Environment
 
 #### VNC
 
-Para acceder al entorno de escritorio usando VNC, puedes utilizar un cliente VNC (por ejemplo, [RealVNC](https://www.realvnc.com/en/connect/download/viewer/)) y conectarte a:
+To access the desktop environment using VNC, you can use a VNC client (for example, [RealVNC](https://www.realvnc.com/en/connect/download/viewer/)) and connect to:
 
-- **Debian**: `localhost:5901`
-- **Fedora**: `localhost:5902`
+- **Distribution**: `localhost:5901`, `localhost:5902`, `localhost:5902`
 
 #### AnyDesk
 
-Para acceder utilizando AnyDesk, abre la aplicación AnyDesk y conéctate utilizando el ID que se muestra en el servidor AnyDesk en el contenedor.
+To log in using AnyDesk, open the AnyDesk app and connect using the ID displayed on the AnyDesk server in the container.
 
-## Dockerfiles
+### DEBIAN-MATE
+![Conexión VNC](./images/debian2.png)
 
-### Dockerfile-debian
+### Image Download from Docker Hub
 
-```dockerfile
-FROM debian:latest
+Si prefieres descargar la imagen preconstruida desde Docker Hub, puedes hacerlo con el siguiente comando:
 
-# Instalación de dependencias
-RUN apt-get update && apt-get install -y \
-    xfce4 \
-    tightvncserver \
-    anydesk \
-    && apt-get clean
+-[Image](https://hub.docker.com/repository/docker/mgodoyd/vnc_debian_mate)
 
-# Configuración de VNC
-RUN mkdir ~/.vnc
-RUN echo "password" | vncpasswd -f > ~/.vnc/passwd
-RUN chmod 600 ~/.vnc/passwd
+### DEBIAN-XFCE
+![Conexión VNC](./images/debian.png)
 
-# Copia de scripts de inicio
-COPY start-vnc.sh /usr/local/bin/start-vnc.sh
-COPY start-anydesk.sh /usr/local/bin/start-anydesk.sh
-RUN chmod +x /usr/local/bin/start-vnc.sh
-RUN chmod +x /usr/local/bin/start-anydesk.sh
+### FEDORA-LXDE
+![Conexión VNC](./images/fedora.png)
 
-# Exposición de puertos
-EXPOSE 5901 7070
 
-# Comando para iniciar VNC y AnyDesk
-CMD ["sh", "-c", "/usr/local/bin/start-vnc.sh & /usr/local/bin/start-anydesk.sh & tail -f /dev/null"]
