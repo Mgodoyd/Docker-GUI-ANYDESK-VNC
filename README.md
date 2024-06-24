@@ -101,25 +101,33 @@ These Docker images also allow connection to a Docker terminal using a graphical
 
 To access the desktop environment using VNC, you can use a VNC client (for example, [RealVNC](https://www.realvnc.com/en/connect/download/viewer/)) and connect to:
 
-- **Distribution**: `localhost:5901`, `localhost:5902`, `localhost:5902`
+- **Distribution**: `localhost:5901`, `localhost:5902`, `localhost:5903`
 
 #### AnyDesk
 
 To log in using AnyDesk, open the AnyDesk app and connect using the ID displayed on the AnyDesk server in the container.
 
+### Image Download from Docker Hub
+
+If you prefer to download the pre-built image from Docker Hub, you can do so with the following command:
+
 ### DEBIAN-MATE
 ![Conexión VNC](./images/debian2.png)
 
-### Image Download from Docker Hub
-
-Si prefieres descargar la imagen preconstruida desde Docker Hub, puedes hacerlo con el siguiente comando:
-
--[Image](https://hub.docker.com/repository/docker/mgodoyd/vnc_debian_mate)
+- [Image Docker Hub](https://hub.docker.com/repository/docker/mgodoyd/vnc_debian_mate)
 
 ### DEBIAN-XFCE
 ![Conexión VNC](./images/debian.png)
 
+- [Image Docker Hub](https://hub.docker.com/repository/docker/mgodoyd/vnc_debian_xfce)
+
 ### FEDORA-LXDE
 ![Conexión VNC](./images/fedora.png)
+
+- [Image Docker Hub](https://hub.docker.com/repository/docker/mgodoyd/vnc_fedora_lxde)
+
+
+### Contribute ⚡
+Contributions are welcome. To contribute, follow the steps to clone the repository and make a pull request. 🚀
 
 
