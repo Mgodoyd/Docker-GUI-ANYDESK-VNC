@@ -109,7 +109,7 @@ To log in using AnyDesk, open the AnyDesk app and connect using the ID displayed
 
 ### Image Download from Docker Hub
 
-If you prefer to download the pre-built image from Docker Hub, you can do so with the following command:
+If you prefer to download the pre-built image from Docker Hub, you can do so with the following link:
 
 ### DEBIAN-MATE
 ![Conexión VNC](./images/debian2.png)
