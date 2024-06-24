@@ -31,6 +31,7 @@ These Docker images also allow connection to a Docker terminal using a graphical
 - `Dockerfile-debian-MATE`: Dockerfile to create a Debian-based image.
 - `Dockerfile-debian-XFCE`: Dockerfile to create a Debian-based image.
 - `Dockerfile-fedora-LXDE`: Dockerfile to create a Fedora-based image.
+- `start-vnc.sh`: Script to start the VNC server.
 
 ## Previous requirements
 
@@ -49,7 +50,7 @@ These Docker images also allow connection to a Docker terminal using a graphical
 
 1. **Debian**
     ```sh
-    docker run -d -p 5901:5901 -p 7070:7070 --name vnc-anydesk-debian vnc-anydesk-debian
+    docker build -t vnc_xxx_xxx .
     ```
 
 2. **Fedora**
